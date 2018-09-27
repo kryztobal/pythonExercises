@@ -14,14 +14,32 @@ class Menu:
 
 class MenuItem:
     def __init__(self, category, meal_name, price):
+        self.index = 0
         self.category = category
         self.meal_name = meal_name
         self.price = price
 
 class Order:
-    def __init__(self, code):
-        self.code = code
+    def __init__(self, restaurant="", MenuItems = []):
+        self.restaurant = restaurant
+        self.menuItems = MenuItems
+    
+    def setOrder(self, MenuItems):
+        self.menuItems = MenuItems
 
+    def addMeal(self, meal):
+        self.menuItems.append(meal)
+    
+    def getTotalOrder(self):
+        total = 0
+        for meal in self.menuItems:
+            patron = re.compile('\$')
+            total += float(patron.sub('',meal.price))
+        return total   
+
+    def createOrderFile(self):
+        f = open('miorder.txt', 'w')
+        f.write("holaaaaaa")
 
 def getMenuItem(menuObjects):
         category = menuObjects[0]
@@ -55,14 +73,31 @@ def groupByCategory(menuItems):
     menuItemsGroup = {'Appetizers':[], 'Drinks':[], 'Entrées':[], 'Deserts':[]} 
     for item in menuItems:
         menuItemsGroup[item.category].append(item)
+    
+    index = 1
+
+    for item in menuItemsGroup['Appetizers']:
+        item.index = index
+        index += 1
+    
+    for item in menuItemsGroup['Drinks']:
+        item.index = index
+        index += 1
+    
+    for item in menuItemsGroup['Entrées']:
+        item.index = index
+        index += 1
+
+    for item in menuItemsGroup['Deserts']:
+        item.index = index
+        index += 1
+
     return menuItemsGroup
 
-def showMeals(category, index = 1):
+def showMeals(category):
     print(category[0].category)
     for meal in category:
-        print(str(index)+'.     '+meal.meal_name+'\t\t\t\t\t\t\t\t'+meal.price)
-        index += 1
-    return index
+        print(str(meal.index)+'.     '+meal.meal_name+'\t\t\t\t\t\t\t\t'+meal.price)
 
 def readRestaurantFile():
     f = open ('file.txt','r')
@@ -86,10 +121,30 @@ def readRestaurantFile():
                 content.remove(content[0])
                 content.remove(content[0])
             auxline = []
-        return restaurants        
+        return restaurants
     else:
         print("File is empty")
         return []
+
+def lenIndex(menuItems):
+    return len(menuItems['Appetizers']) + len(menuItems['Drinks']) + len(menuItems['Entrées'])+ len(menuItems['Deserts'])
+
+def getMeal(index, menuItems):
+    for item in menuItems['Appetizers']:
+        if(item.index == int(index)):
+            return item
+    
+    for item in menuItems['Drinks']:
+        if(item.index == int(index)):
+            return item
+    
+    for item in menuItems['Entrées']:
+        if(item.index == int(index)):
+            return item
+
+    for item in menuItems['Deserts']:
+        if(item.index == int(index)):
+            return item
 
 restaurants = readRestaurantFile()
 
@@ -102,11 +157,15 @@ while(opcion != 0):
     print("0. Quit")
     opcion = int(input("ingrese la opcion del menu del restaurante que desee: "))
     if(opcion != 0):
+        clear_console()
+        
+        restaurant = restaurants[opcion-1]
+        print("Welcome to "+restaurant.name)
+        order = Order(restaurant.name)
+        
         meal_option = None
-        while(meal_option != 'q'):
+        while(meal_option != 'q' and meal_option != 'Q'):
             clear_console()
-            restaurant = restaurants[opcion-1]
-            print("Welcome to "+restaurant.name)
             print("NewMeal(n)                           Quit(q)")
             menuItems = groupByCategory(restaurant.Menu.menuItems)
 
@@ -116,13 +175,32 @@ while(opcion != 0):
             deserts = menuItems['Deserts']
 
             if(len(appetizers) > 0):
-                index = showMeals(appetizers)
+               showMeals(appetizers)
             if(len(drinks) > 0):
-                index = showMeals(drinks, index)
+               showMeals(drinks)
             if(len(entrees) > 0):
-                index =showMeals(entrees, index)
+               showMeals(entrees)
             if(len(deserts) > 0):
-                index = showMeals(deserts, index)
-            meal_option = input("Please enter item[1.."+str((index-1))+"]: ")
-            print(meal_option)
-            test = input()
+               showMeals(deserts)
+
+            if(len(order.menuItems) > 0):
+                print("================================================")
+                print("Your current meal has "+str(len(order.menuItems))+" item(s).")
+                for meal in order.menuItems:
+                    print(str(meal.index)+"\t"+meal.category+"\t\t"+meal.meal_name+"\t\t\t"+meal.price)
+                print("================================================")
+                print("\t\t\t\t\t\tTotal = "+str(order.getTotalOrder()))
+            meal_option = input("Please enter item[1.."+str(lenIndex(menuItems))+"]: ")
+            
+
+            if(re.match('\d',meal_option)):
+                if(int(meal_option) > 0 and int(meal_option) <= lenIndex(menuItems)):
+                    order.addMeal(getMeal(meal_option, menuItems))
+                    #print(getMeal(meal_option, menuItems).meal_name)
+            elif(re.match('n|N', meal_option)):
+                if(len(order.menuItems) > 0):
+                    order.createOrderFile()
+            elif(re.match('q|Q', meal_option)):
+                    pass
+            else:
+                exit = input("Option no valid, press any key for continue...")
