@@ -1,0 +1,15 @@
+Restaurant1
+Date: 27/09/2018
+
+=========================================================
+Appetizers          Chicken Satay                 $7.50                                             
+Appetizers          Egyptian Spring Rolls         $6.50                                             
+Appetizers          Humus                         $5.50                                             
+Appetizers          Samboosa                      $5.50                                             
+Appetizers          Egyptian Spring Rolls         $6.50                                             
+=========================================================
+
+SubTotal = $31.5
+Tax       = $2.21
+Tip       = $4
+Total     = $37.71

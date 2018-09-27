@@ -1,0 +1,14 @@
+Restaurant1
+Date: 27/09/2018
+
+=========================================================
+Appetizers          Egyptian Spring Rolls         $6.50                                             
+Appetizers          Humus                         $5.50                                             
+Appetizers          Samboosa                      $5.50                                             
+Drinks              Tea with mint                 $2.25                                             
+=========================================================
+
+SubTotal = $19.75
+Tax       = $1.38
+Tip       = $4
+Total     = $25.13
